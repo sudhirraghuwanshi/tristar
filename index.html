@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>TriStar Sports And Fitness — Coming Soon</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:ital,wght@0,300;0,400;0,600;1,300&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --red:    #E81C24;
+      --dark-red: #A01018;
+      --black:  #0A0A0A;
+      --dark:   #111111;
+      --grey:   #1C1C1C;
+      --muted:  #883333;
+      --white:  #F5F5F0;
+    }
+
+    html, body {
+      height: 100%;
+      background: var(--black);
+      color: var(--white);
+      font-family: 'Barlow', sans-serif;
+      overflow-x: hidden;
+    }
+
+    /* Noise Overlay */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+      opacity: 0.035;
+      pointer-events: none;
+      z-index: 100;
+    }
+
+    /* Watermark Logo */
+    .watermark {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .watermark img {
+      width: min(70vw, 600px);
+      height: auto;
+      opacity: 0.04;
+      filter: grayscale(1) brightness(5);
+    }
+
+    /* Grid Lines */
+    .grid-lines {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .grid-lines::before,
+    .grid-lines::after {
+      content: '';
+      position: absolute;
+      background: rgba(232,28,36,0.06);
+    }
+    .grid-lines::before { top: 0; bottom: 0; left: 50%; width: 1px; }
+    .grid-lines::after  { left: 0; right: 0; top: 50%; height: 1px; }
+
+    /* BG Orbs */
+    .bg-orb {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(120px);
+      pointer-events: none;
+      z-index: 0;
+    }
+    .bg-orb-1 {
+      width: 600px; height: 600px;
+      top: -200px; left: -150px;
+      background: radial-gradient(circle, rgba(232,28,36,0.2) 0%, transparent 70%);
+      animation: drift1 12s ease-in-out infinite alternate;
+    }
+    .bg-orb-2 {
+      width: 500px; height: 500px;
+      bottom: -150px; right: -100px;
+      background: radial-gradient(circle, rgba(232,28,36,0.1) 0%, transparent 70%);
+      animation: drift2 15s ease-in-out infinite alternate;
+    }
+    @keyframes drift1 { from { transform: translate(0,0); } to { transform: translate(60px, 40px); } }
+    @keyframes drift2 { from { transform: translate(0,0); } to { transform: translate(-40px, -60px); } }
+
+    /* Layout */
+    .page {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Top Bar */
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 28px 48px;
+      border-bottom: 1px solid rgba(232,28,36,0.15);
+      animation: fadeDown 0.8s ease both;
+    }
+    .topbar-logo img {
+      height: 48px;
+      width: auto;
+      display: block;
+    }
+    .topbar-tag {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    /* Main */
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 60px 48px;
+      max-width: 1100px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .eyebrow {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--red);
+      margin-bottom: 24px;
+      opacity: 0;
+      animation: fadeUp 0.7s 0.3s ease forwards;
+    }
+
+    .brand-block {
+      overflow: hidden;
+      margin-bottom: 8px;
+    }
+    .brand-line {
+      display: block;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(64px, 11vw, 140px);
+      line-height: 0.9;
+      letter-spacing: 0.02em;
+      color: var(--white);
+      transform: translateY(100%);
+      animation: slideUp 0.9s cubic-bezier(0.16,1,0.3,1) forwards;
+    }
+    .brand-line.delay-1 { animation-delay: 0.45s; }
+    .brand-line.delay-2 { animation-delay: 0.6s; }
+    .brand-line.accent {
+      -webkit-text-stroke: 2px var(--red);
+      color: transparent;
+    }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin: 36px 0;
+      opacity: 0;
+      animation: fadeUp 0.7s 0.9s ease forwards;
+    }
+    .divider-line {
+      height: 1px;
+      background: linear-gradient(90deg, var(--red), transparent);
+      flex: 1;
+      max-width: 200px;
+    }
+    .divider-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--red);
+    }
+
+    .tagline {
+      font-size: clamp(16px, 2.2vw, 22px);
+      font-weight: 300;
+      font-style: italic;
+      color: rgba(245,245,240,0.55);
+      max-width: 520px;
+      line-height: 1.5;
+      opacity: 0;
+      animation: fadeUp 0.7s 1s ease forwards;
+    }
+
+    /* Coming Soon Badge */
+    .badge-row {
+      margin-top: 56px;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      flex-wrap: wrap;
+      opacity: 0;
+      animation: fadeUp 0.7s 1.2s ease forwards;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      border: 1.5px solid var(--red);
+      padding: 12px 28px;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 22px;
+      letter-spacing: 0.15em;
+      color: var(--red);
+      position: relative;
+      overflow: hidden;
+    }
+    .badge::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: var(--red);
+      transform: translateX(-101%);
+      transition: transform 0.35s ease;
+    }
+    .badge:hover::before { transform: translateX(0); }
+    .badge:hover { color: var(--white); }
+    .badge span { position: relative; z-index: 1; }
+
+    .badge-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--red);
+      animation: blink 1.2s ease-in-out infinite;
+      position: relative; z-index: 1;
+    }
+    @keyframes blink { 0%,100%{opacity:1;} 50%{opacity:0.2;} }
+
+    /* Contact */
+    .contact-section {
+      margin-top: 64px;
+      padding-top: 40px;
+      border-top: 1px solid rgba(232,28,36,0.12);
+      opacity: 0;
+      animation: fadeUp 0.7s 1.4s ease forwards;
+    }
+    .contact-label {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 20px;
+    }
+    .contact-links {
+      display: flex;
+      gap: 40px;
+      flex-wrap: wrap;
+    }
+    .contact-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: var(--white);
+      font-size: 15px;
+      font-weight: 300;
+      letter-spacing: 0.04em;
+      transition: color 0.2s;
+    }
+    .contact-item:hover { color: var(--red); }
+    .contact-icon {
+      width: 36px; height: 36px;
+      border: 1px solid rgba(232,28,36,0.2);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .contact-item:hover .contact-icon {
+      border-color: var(--red);
+      background: rgba(232,28,36,0.1);
+    }
+    .contact-icon svg { width: 16px; height: 16px; fill: currentColor; }
+
+    /* Footer */
+    .footer {
+      padding: 24px 48px;
+      border-top: 1px solid rgba(232,28,36,0.08);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      animation: fadeUp 0.7s 1.6s ease both;
+      opacity: 0;
+    }
+    .footer-copy {
+      font-size: 12px;
+      color: var(--muted);
+      letter-spacing: 0.05em;
+    }
+    .footer-stripe {
+      display: flex;
+      gap: 4px;
+    }
+    .footer-stripe span {
+      display: block;
+      width: 20px; height: 3px;
+      background: var(--red);
+      opacity: 0.6;
+    }
+    .footer-stripe span:nth-child(2) { opacity: 0.4; }
+    .footer-stripe span:nth-child(3) { opacity: 0.2; }
+
+    /* Animations */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeDown {
+      from { opacity: 0; transform: translateY(-16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes slideUp {
+      from { transform: translateY(100%); }
+      to   { transform: translateY(0); }
+    }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+      .topbar, .main, .footer { padding-left: 24px; padding-right: 24px; }
+      .contact-links { flex-direction: column; gap: 16px; }
+      .badge-row { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="watermark">
+  <img src="data:image/jpeg;base64,LOGO_PLACEHOLDER" alt="TriStar Logo Watermark" />
+</div>
+
+<div class="grid-lines"></div>
+<div class="bg-orb bg-orb-1"></div>
+<div class="bg-orb bg-orb-2"></div>
+
+<div class="page">
+
+  <header class="topbar">
+    <div class="topbar-logo">
+      <img src="data:image/jpeg;base64,LOGO_PLACEHOLDER" alt="TriStar Sports And Fitness" />
+    </div>
+    <div class="topbar-tag">Est. 2025 &nbsp;·&nbsp; Sports &amp; Fitness</div>
+  </header>
+
+  <main class="main">
+    <p class="eyebrow">Something big is loading</p>
+
+    <div class="brand-block">
+      <span class="brand-line delay-1">TriStar</span>
+    </div>
+    <div class="brand-block">
+      <span class="brand-line accent delay-2">Sports &amp; Fitness</span>
+    </div>
+
+    <div class="divider">
+      <div class="divider-line"></div>
+      <div class="divider-dot"></div>
+    </div>
+
+    <p class="tagline">
+      Train hard. Play harder. We're building something extraordinary for athletes and fitness enthusiasts everywhere.
+    </p>
+
+    <div class="badge-row">
+      <div class="badge">
+        <div class="badge-dot"></div>
+        <span>Coming Soon</span>
+      </div>
+    </div>
+
+    <div class="contact-section">
+      <p class="contact-label">Get in touch</p>
+      <div class="contact-links">
+
+        <a class="contact-item" href="mailto:tristarsports.store@gmail.com">
+          <div class="contact-icon">
+            <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4-8 5-8-5V6l8 5 8-5v2z"/></svg>
+          </div>
+          tristarsports.store@gmail.com
+        </a>
+
+        <a class="contact-item" href="tel:+919606404334">
+          <div class="contact-icon">
+            <svg viewBox="0 0 24 24"><path d="M6.62 10.79a15.05 15.05 0 0 0 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1C10.61 21 3 13.39 3 4c0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.24 1.02l-2.21 2.2z"/></svg>
+          </div>
+          +91-9606404334
+        </a>
+
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <span class="footer-copy">© 2025 TriStar Sports And Fitness. All rights reserved.</span>
+    <div class="footer-stripe">
+      <span></span><span></span><span></span>
+    </div>
+  </footer>
+
+</div>
+</body>
+</html>
